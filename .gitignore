@@ -1,0 +1,19 @@
+# Binary / build
+main.exe
+woodpecker
+woodpecker.exe
+*.exe
+
+# Database (keep local; deploy uses volume/remote)
+woodpecker.db
+*.db
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Optional: exclude the book PDF if you don't want it in the repo
+# The_Woodpecker_Method_by_Axel_Smith_and.pdf

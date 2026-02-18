@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Woodpecker Online - Statistics</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .stats-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .stats-header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .stat-card h3 {
+            color: #374151;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s ease;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-container h3 {
+            color: #374151;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .depth-trend {
+            display: flex;
+            align-items: end;
+            height: 200px;
+            gap: 4px;
+            padding: 1rem 0;
+        }
+        
+        .depth-bar {
+            flex: 1;
+            background: #3b82f6;
+            border-radius: 4px 4px 0 0;
+            min-height: 4px;
+            transition: height 0.3s ease;
+            position: relative;
+        }
+        
+        .depth-bar:hover {
+            background: #2563eb;
+        }
+        
+        .depth-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: #3b82f6;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: background 0.2s;
+            margin-bottom: 2rem;
+        }
+        
+        .back-button:hover {
+            background: #2563eb;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="stats-container">
+        <a href="/" class="back-button">← Back to Puzzles</a>
+        
+        <div class="stats-header">
+            <h1>Your Progress Statistics</h1>
+            <p>Track your improvement and performance over time</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Today's Progress</h3>
+                <div class="stat-value" id="today-attempted">-</div>
+                <div class="stat-label">Puzzles Attempted</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="today-progress" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Today's Success</h3>
+                <div class="stat-value" id="today-solved">-</div>
+                <div class="stat-label">Puzzles Solved</div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Average Score</h3>
+                <div class="stat-value" id="average-score">-</div>
+                <div class="stat-label">Points per Puzzle</div>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Success Rate</h3>
+                <div class="stat-value" id="success-rate">-</div>
+                <div class="stat-label">Solved / Attempted</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h3>Depth Trend - Average Matched Moves per Puzzle</h3>
+            <div class="loading" id="depth-loading">Loading depth data...</div>
+            <div class="depth-trend" id="depth-chart" style="display: none;">
+                <!-- Depth bars will be generated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load today's progress
+        async function loadTodayProgress() {
+            try {
+                const response = await fetch('/api/progress/today');
+                const data = await response.json();
+                
+                document.getElementById('today-attempted').textContent = data.totalAttempted;
+                document.getElementById('today-solved').textContent = data.totalSolved;
+                document.getElementById('average-score').textContent = data.averageScore.toFixed(1);
+                
+                const successRate = data.totalAttempted > 0 ? 
+                    ((data.totalSolved / data.totalAttempted) * 100).toFixed(1) : '0.0';
+                document.getElementById('success-rate').textContent = successRate + '%';
+                
+                // Update progress bar
+                const progressPercent = data.totalAttempted > 0 ? 
+                    (data.totalSolved / data.totalAttempted) * 100 : 0;
+                document.getElementById('today-progress').style.width = progressPercent + '%';
+                
+            } catch (error) {
+                console.error('Error loading today\'s progress:', error);
+            }
+        }
+        
+        // Load depth trend data (placeholder for now)
+        async function loadDepthTrend() {
+            try {
+                // For now, we'll show a placeholder chart
+                // In a real implementation, this would fetch historical data
+                const depthChart = document.getElementById('depth-chart');
+                const loading = document.getElementById('depth-loading');
+                
+                // Simulate some data
+                const depths = [2.1, 2.8, 2.3, 3.1, 2.9, 3.2, 2.7, 3.0];
+                const maxDepth = Math.max(...depths);
+                
+                depthChart.innerHTML = '';
+                depths.forEach((depth, index) => {
+                    const height = (depth / maxDepth) * 100;
+                    const bar = document.createElement('div');
+                    bar.className = 'depth-bar';
+                    bar.style.height = height + '%';
+                    bar.title = `Day ${index + 1}: ${depth.toFixed(1)} moves`;
+                    
+                    const label = document.createElement('div');
+                    label.className = 'depth-label';
+                    label.textContent = `D${index + 1}`;
+                    
+                    bar.appendChild(label);
+                    depthChart.appendChild(bar);
+                });
+                
+                loading.style.display = 'none';
+                depthChart.style.display = 'flex';
+                
+            } catch (error) {
+                console.error('Error loading depth trend:', error);
+            }
+        }
+        
+        // Load all data when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTodayProgress();
+            loadDepthTrend();
+        });
+    </script>
+</body>
+</html>

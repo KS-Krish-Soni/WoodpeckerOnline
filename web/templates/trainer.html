@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Woodpecker Trainer - WoodpeckerOnline</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .trainer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .wizard-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .cycle-panel {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .session-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .wizard-step {
+            display: none;
+        }
+
+        .wizard-step.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .cycle-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .cycle-stat {
+            text-align: center;
+        }
+
+        .cycle-stat h3 {
+            margin: 0 0 5px 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .cycle-stat p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .timer {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: #2c3e50;
+        }
+
+        .puzzle-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .preset-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .preset-card {
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .preset-card:hover {
+            border-color: #3498db;
+            background: #f8f9fa;
+        }
+
+        .preset-card.selected {
+            border-color: #3498db;
+            background: #e3f2fd;
+        }
+
+        .preset-card h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+
+        .preset-card p {
+            margin: 0;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="trainer-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1>Woodpecker Trainer</h1>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/" class="btn btn-secondary" style="text-decoration: none;">← Back to Puzzles</a>
+                <a href="/settings" class="btn btn-secondary" style="text-decoration: none;">Settings</a>
+            </div>
+        </div>
+        
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading trainer...</p>
+        </div>
+
+        <!-- Set Creation Wizard -->
+        <div id="wizard-container" class="wizard-container hidden">
+            <h2>Create Your Training Set</h2>
+            
+            <!-- Step 1: Choose Method -->
+            <div id="step-1" class="wizard-step active">
+                <h3>How would you like to create your set?</h3>
+                <div style="margin: 20px 0;">
+                    <button class="btn" onclick="showStep(2)">Create Custom Set</button>
+                    <button class="btn btn-secondary" onclick="showStep(3)">Use Recommended Preset</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Custom Set -->
+            <div id="step-2" class="wizard-step">
+                <h3>Custom Set Configuration</h3>
+                <form id="custom-set-form">
+                    <div class="form-group">
+                        <label for="set-name">Set Name</label>
+                        <input type="text" id="set-name" name="name" placeholder="e.g., My Easy Puzzles" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="set-description">Description (optional)</label>
+                        <input type="text" id="set-description" name="description" placeholder="Brief description of this set">
+                    </div>
+                    <div class="form-group">
+                        <label for="difficulty-min">Minimum Difficulty</label>
+                        <select id="difficulty-min" name="difficulty_min" required>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="difficulty-max">Maximum Difficulty</label>
+                        <select id="difficulty-max" name="difficulty_max" required>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="set-size">Number of Puzzles</label>
+                        <input type="number" id="set-size" name="size" min="5" max="100" value="20" required>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <button type="button" class="btn btn-secondary" onclick="showStep(1)">Back</button>
+                        <button type="submit" class="btn btn-success">Create Set</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Step 3: Preset Selection -->
+            <div id="step-3" class="wizard-step">
+                <h3>Choose a Recommended Preset</h3>
+                <div class="preset-options">
+                    <div class="preset-card" data-preset="beginner">
+                        <h4>Beginner (Easy)</h4>
+                        <p>20 easy puzzles for new players</p>
+                        <p><strong>Target: 28 days</strong></p>
+                    </div>
+                    <div class="preset-card" data-preset="intermediate">
+                        <h4>Intermediate (Easy-Medium)</h4>
+                        <p>30 puzzles ranging from easy to medium</p>
+                        <p><strong>Target: 28 days</strong></p>
+                    </div>
+                    <div class="preset-card" data-preset="advanced">
+                        <h4>Advanced (Medium-Hard)</h4>
+                        <p>25 medium to hard puzzles</p>
+                        <p><strong>Target: 28 days</strong></p>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button class="btn btn-secondary" onclick="showStep(1)">Back</button>
+                    <button class="btn btn-success" onclick="createPresetSet()" disabled id="create-preset-btn">Create Set</button>
+                </div>
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+        </div>
+
+        <!-- Cycle Panel -->
+        <div id="cycle-panel" class="cycle-panel hidden">
+            <h2 id="cycle-title">Cycle 1 of 1</h2>
+            <div class="cycle-info">
+                <div class="cycle-stat">
+                    <h3 id="target-days">28</h3>
+                    <p>Target Days</p>
+                </div>
+                <div class="cycle-stat">
+                    <h3 id="daily-pace">0</h3>
+                    <p>Puzzles/Day</p>
+                </div>
+                <div class="cycle-stat">
+                    <h3 id="remaining-puzzles">0</h3>
+                    <p>Remaining</p>
+                </div>
+            </div>
+            <div style="text-align: center;">
+                <button id="start-session-btn" class="btn btn-success">Start Session</button>
+            </div>
+        </div>
+
+        <!-- Session Panel -->
+        <div id="session-panel" class="session-panel hidden">
+            <h2>Training Session</h2>
+            <div class="timer" id="session-timer">00:00:00</div>
+            
+            <div class="puzzle-info">
+                <h3>Puzzle <span id="current-puzzle-number">1</span></h3>
+                <p>Difficulty: <span id="current-puzzle-difficulty">Easy</span></p>
+                <p>Progress: <span id="session-progress">0/0</span> puzzles completed</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="finish-session-btn" class="btn btn-danger">Finish Session</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentSet = null;
+        let currentCycle = null;
+        let currentSession = null;
+        let sessionStartTime = null;
+        let sessionTimer = null;
+        let selectedPreset = null;
+
+        // Initialize trainer
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUserInfo();
+        });
+
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/api/me', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    currentUser = await response.json();
+                    await loadUserSets();
+                } else {
+                    window.location.href = '/auth/sign-in';
+                }
+            } catch (error) {
+                console.error('Failed to load user info:', error);
+                window.location.href = '/auth/sign-in';
+            }
+        }
+
+        async function loadUserSets() {
+            try {
+                const response = await fetch('/api/trainer/sets', {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    const sets = await response.json();
+                    if (sets.length > 0) {
+                        // User has sets, load the first one and its active cycle
+                        currentSet = sets[0];
+                        await loadActiveCycle();
+                    } else {
+                        // User has no sets, show wizard
+                        showWizard();
+                    }
+                } else {
+                    showWizard();
+                }
+            } catch (error) {
+                console.error('Failed to load sets:', error);
+                showWizard();
+            }
+        }
+
+        async function loadActiveCycle() {
+            try {
+                const response = await fetch(`/api/trainer/cycles/active?set_id=${currentSet.id}`, {
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    currentCycle = await response.json();
+                    if (currentCycle) {
+                        showCyclePanel();
+                    } else {
+                        // No active cycle, create one
+                        await createCycle1();
+                    }
+                } else {
+                    await createCycle1();
+                }
+            } catch (error) {
+                console.error('Failed to load active cycle:', error);
+                await createCycle1();
+            }
+        }
+
+        async function createCycle1() {
+            try {
+                const response = await fetch('/api/trainer/cycles', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        set_id: currentSet.id,
+                        index: 1,
+                        target_days: 28,
+                        status: 'active'
+                    })
+                });
+                
+                if (response.ok) {
+                    currentCycle = await response.json();
+                    showCyclePanel();
+                } else {
+                    showError('Failed to create cycle');
+                }
+            } catch (error) {
+                console.error('Failed to create cycle:', error);
+                showError('Failed to create cycle');
+            }
+        }
+
+        function showWizard() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('wizard-container').classList.remove('hidden');
+        }
+
+        function showCyclePanel() {
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('cycle-panel').classList.remove('hidden');
+            
+            // Update cycle info
+            document.getElementById('cycle-title').textContent = `Cycle ${currentCycle.index} of 1`;
+            document.getElementById('target-days').textContent = currentCycle.target_days;
+            
+            // Calculate and display daily pace
+            calculateDailyPace();
+        }
+
+        function showSessionPanel() {
+            document.getElementById('session-panel').classList.remove('hidden');
+            startSessionTimer();
+        }
+
+        function calculateDailyPace() {
+            // Get remaining puzzles and days
+            fetch(`/api/trainer/sets/${currentSet.id}/puzzles`, {
+                credentials: 'include'
+            })
+            .then(response => response.json())
+            .then(puzzles => {
+                const totalPuzzles = puzzles.length;
+                const remainingDays = currentCycle.target_days;
+                const dailyPace = Math.ceil(totalPuzzles / remainingDays);
+                
+                document.getElementById('daily-pace').textContent = dailyPace;
+                document.getElementById('remaining-puzzles').textContent = totalPuzzles;
+            })
+            .catch(error => {
+                console.error('Failed to calculate daily pace:', error);
+            });
+        }
+
+        function showStep(stepNumber) {
+            // Hide all steps
+            document.querySelectorAll('.wizard-step').forEach(step => {
+                step.classList.remove('active');
+            });
+            
+            // Show selected step
+            document.getElementById(`step-${stepNumber}`).classList.add('active');
+        }
+
+        // Custom set form submission
+        document.getElementById('custom-set-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const setData = {
+                name: formData.get('name'),
+                description: formData.get('description'),
+                difficulty_min: formData.get('difficulty_min'),
+                difficulty_max: formData.get('difficulty_max'),
+                size: parseInt(formData.get('size'))
+            };
+            
+            await createSet(setData);
+        });
+
+        // Preset selection
+        document.querySelectorAll('.preset-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedPreset = this.dataset.preset;
+                document.getElementById('create-preset-btn').disabled = false;
+            });
+        });
+
+        async function createPresetSet() {
+            const presets = {
+                beginner: { name: 'Beginner Set', difficulty_min: 'easy', difficulty_max: 'easy', size: 20 },
+                intermediate: { name: 'Intermediate Set', difficulty_min: 'easy', difficulty_max: 'medium', size: 30 },
+                advanced: { name: 'Advanced Set', difficulty_min: 'medium', difficulty_max: 'hard', size: 25 }
+            };
+            
+            const preset = presets[selectedPreset];
+            if (preset) {
+                await createSet(preset);
+            }
+        }
+
+        async function createSet(setData) {
+            try {
+                const response = await fetch('/api/trainer/sets', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(setData)
+                });
+                
+                if (response.ok) {
+                    currentSet = await response.json();
+                    showSuccess('Set created successfully!');
+                    
+                    // Auto-create Cycle 1
+                    setTimeout(async () => {
+                        await createCycle1();
+                    }, 1000);
+                } else {
+                    const error = await response.text();
+                    showError(error);
+                }
+            } catch (error) {
+                console.error('Failed to create set:', error);
+                showError('Failed to create set');
+            }
+        }
+
+        // Start session
+        document.getElementById('start-session-btn').addEventListener('click', async function() {
+            try {
+                const response = await fetch('/api/trainer/sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        cycle_id: currentCycle.id,
+                        target_count: 10 // Default target
+                    })
+                });
+                
+                if (response.ok) {
+                    currentSession = await response.json();
+                    sessionStartTime = new Date();
+                    showSessionPanel();
+                } else {
+                    showError('Failed to start session');
+                }
+            } catch (error) {
+                console.error('Failed to start session:', error);
+                showError('Failed to start session');
+            }
+        });
+
+        // Finish session
+        document.getElementById('finish-session-btn').addEventListener('click', async function() {
+            if (sessionTimer) {
+                clearInterval(sessionTimer);
+            }
+            
+            const sessionDuration = Math.floor((new Date() - sessionStartTime) / 1000);
+            
+            try {
+                const response = await fetch(`/api/trainer/sessions/${currentSession.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        ended_at: new Date().toISOString(),
+                        duration_seconds: sessionDuration
+                    })
+                });
+                
+                if (response.ok) {
+                    showSuccess('Session completed!');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                } else {
+                    showError('Failed to finish session');
+                }
+            } catch (error) {
+                console.error('Failed to finish session:', error);
+                showError('Failed to finish session');
+            }
+        });
+
+        function startSessionTimer() {
+            sessionStartTime = new Date();
+            sessionTimer = setInterval(() => {
+                const elapsed = Math.floor((new Date() - sessionStartTime) / 1000);
+                const hours = Math.floor(elapsed / 3600);
+                const minutes = Math.floor((elapsed % 3600) / 60);
+                const seconds = elapsed % 60;
+                
+                document.getElementById('session-timer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

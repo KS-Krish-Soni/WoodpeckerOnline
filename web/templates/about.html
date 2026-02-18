@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Woodpecker Method</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .content-section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        
+        .method-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .method-title {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .method-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tldr-section {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .tldr-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 1rem;
+        }
+        
+        .tldr-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .tldr-list li {
+            padding: 0.5rem 0;
+            color: #374151;
+        }
+        
+        .tldr-list li::before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        
+        .cta-section {
+            text-align: center;
+            margin: 3rem 0;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .modal-close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+        
+        .modal-close:hover {
+            color: #374151;
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1rem;
+        }
+        
+        .modal-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-section h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+        
+        .modal-section p {
+            color: #4b5563;
+            line-height: 1.6;
+        }
+        
+        .modal-section ul {
+            color: #4b5563;
+            line-height: 1.6;
+            padding-left: 1.5rem;
+        }
+        
+        .link-button {
+            color: #3b82f6;
+            text-decoration: underline;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: inherit;
+        }
+        
+        .link-button:hover {
+            color: #1d4ed8;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+            
+            .content-section {
+                padding: 2rem 1rem;
+            }
+            
+            .method-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-section">
+        <h1 class="hero-title">The Woodpecker Method</h1>
+        <p class="hero-subtitle">
+            Master chess tactics through systematic repetition and progressive difficulty. 
+            Transform your tactical vision with this proven training system.
+        </p>
+    </div>
+
+    <div class="content-section">
+        <div class="method-card">
+            <h2 class="method-title">What is the Woodpecker Method?</h2>
+            <p class="method-description">
+                The Woodpecker Method is a systematic approach to chess tactical training developed by Axel Smith. 
+                It focuses on solving the same set of puzzles multiple times with increasing speed and accuracy, 
+                building pattern recognition and tactical intuition through deliberate practice.
+            </p>
+            
+            <div class="tldr-section">
+                <h3 class="tldr-title">TL;DR - How It Works</h3>
+                <ul class="tldr-list">
+                    <li><strong>Set:</strong> A collection of puzzles (typically 20-50) of similar difficulty</li>
+                    <li><strong>Cycle:</strong> Complete solving of your entire set from start to finish</li>
+                    <li><strong>5-Step Plan:</strong> Solve → Review → Repeat → Speed Up → Master</li>
+                    <li><strong>Halving Deadlines:</strong> Each cycle should take half the time of the previous</li>
+                    <li><strong>Scoring:</strong> 1 point for first move + 1 point per "must-see" move</li>
+                    <li><strong>Record-Keeping:</strong> Track time, accuracy, and progress between cycles</li>
+                </ul>
+            </div>
+            
+            <p class="method-description">
+                This method emphasizes quality over quantity, ensuring that tactical patterns become deeply 
+                ingrained through repetition. The progressive speed increase builds confidence and pattern 
+                recognition, while the scoring system helps identify which moves are truly essential to see.
+            </p>
+            
+            <div class="cta-section">
+                <button class="link-button" onclick="openModal()">View Method Details</button>
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <a href="/auth/sign-in" id="get-started-btn" class="cta-button">Get Started</a>
+        </div>
+    </div>
+
+    <!-- Modal for detailed method information -->
+    <div id="methodModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2 class="modal-title">Complete Woodpecker Method Guide</h2>
+            
+            <div class="modal-section">
+                <h3>What is a Set?</h3>
+                <p>A Set is a curated collection of chess puzzles, typically 20-50 positions, all of similar difficulty level. 
+                The puzzles should be challenging but solvable, focusing on specific tactical themes like pins, forks, skewers, 
+                or combinations. Start with easier sets and gradually increase difficulty as you improve.</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>What is a Cycle?</h3>
+                <p>A Cycle is one complete pass through your entire set of puzzles. You solve every puzzle in the set from 
+                beginning to end, then move on to the next cycle. The goal is to complete multiple cycles with increasing 
+                speed and accuracy, building pattern recognition through repetition.</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>The 5-Step Plan</h3>
+                <ul>
+                    <li><strong>Step 1 - Solve:</strong> Work through your set, solving each puzzle carefully</li>
+                    <li><strong>Step 2 - Review:</strong> Go back and study the solutions, understanding the key ideas</li>
+                    <li><strong>Step 3 - Repeat:</strong> Solve the set again, focusing on accuracy</li>
+                    <li><strong>Step 4 - Speed Up:</strong> Solve faster while maintaining accuracy</li>
+                    <li><strong>Step 5 - Master:</strong> Achieve near-instant recognition of patterns</li>
+                </ul>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Halving Cadence</h3>
+                <p>Each cycle should take approximately half the time of the previous cycle. If your first cycle takes 2 hours, 
+                your second should take about 1 hour, your third 30 minutes, and so on. This progressive speed increase 
+                builds confidence and ensures patterns become deeply ingrained.</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Simple Scoring System</h3>
+                <p>Score 1 point for finding the first move correctly, plus 1 additional point for each "must-see" move 
+                in the solution. Must-see moves are the critical tactical moves that are essential to the combination. 
+                This scoring helps you identify which moves are truly important to recognize quickly.</p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>Record-Keeping & Breaks</h3>
+                <p>Track your time for each cycle, your accuracy scores, and note any patterns you're struggling with. 
+                Take scheduled breaks between cycles - don't rush from one cycle to the next immediately. 
+                A day or two between cycles allows your brain to consolidate the patterns you've learned.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check auth status and update CTA button
+        async function checkAuthStatus() {
+            try {
+                const response = await fetch('/api/me', {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const ctaButton = document.getElementById('get-started-btn');
+                    if (data.id) {
+                        ctaButton.textContent = 'Go to Trainer';
+                        ctaButton.href = '/';
+                    } else {
+                        ctaButton.textContent = 'Get Started';
+                        ctaButton.href = '/auth/sign-in';
+                    }
+                } else {
+                    // User not authenticated
+                    const ctaButton = document.getElementById('get-started-btn');
+                    ctaButton.textContent = 'Get Started';
+                    ctaButton.href = '/auth/sign-in';
+                }
+            } catch (error) {
+                console.error('Error checking auth status:', error);
+                // Default to not logged in
+                const ctaButton = document.getElementById('get-started-btn');
+                ctaButton.textContent = 'Get Started';
+                ctaButton.href = '/auth/sign-in';
+            }
+        }
+        
+        // Modal functions
+        function openModal() {
+            document.getElementById('methodModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('methodModal').style.display = 'none';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('methodModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthStatus();
+        });
+    </script>
+</body>
+</html>

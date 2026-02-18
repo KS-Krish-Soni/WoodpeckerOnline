@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Woodpecker Online</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .settings-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .settings-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .settings-header h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .settings-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+        }
+        
+        .settings-section h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        
+        .user-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        
+        .user-info span {
+            color: #7f8c8d;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #3498db;
+            color: #3498db;
+        }
+        
+        .btn-outline:hover {
+            background: #3498db;
+            color: white;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #7f8c8d;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .back-link:hover {
+            color: #3498db;
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+                <h1 style="margin: 0; color: #2c3e50;">Settings</h1>
+                <p style="margin: 0.5rem 0 0 0; color: #7f8c8d;">Manage your account and preferences</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/" class="btn btn-secondary" style="text-decoration: none;">← Back to Puzzles</a>
+                <a href="/trainer" class="btn btn-secondary" style="text-decoration: none;">Trainer</a>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h2>Account Information</h2>
+            <div class="user-info">
+                <span>Email:</span>
+                <span id="user-email">Loading...</span>
+            </div>
+            <div class="user-info">
+                <span>Member since:</span>
+                <span id="user-created">Loading...</span>
+            </div>
+        </div>
+        
+        <div class="settings-section">
+            <h2>Training Preferences</h2>
+            <p>Training preferences will be available in future updates.</p>
+        </div>
+        
+        <div class="settings-section">
+            <h2>Actions</h2>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                <a href="/progress" class="btn btn-primary">View Progress</a>
+                <button class="btn btn-outline" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/api/me', {
+                    credentials: 'include'
+                });
+                if (response.ok) {
+                    const user = await response.json();
+                    document.getElementById('user-email').textContent = user.email;
+                    document.getElementById('user-created').textContent = new Date(user.created_at).toLocaleDateString();
+                } else {
+                    window.location.href = '/auth/sign-in';
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                window.location.href = '/auth/sign-in';
+            }
+        }
+
+        async function logout() {
+            try {
+                const response = await fetch('/auth/logout', {
+                    method: 'POST',
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/about';
+                } else {
+                    console.error('Logout failed');
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadUserInfo);
+    </script>
+</body>
+</html>

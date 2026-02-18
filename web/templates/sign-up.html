@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Woodpecker Online</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .auth-header h1 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .auth-header p {
+            color: #7f8c8d;
+            margin: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        .form-group input.error {
+            border-color: #e74c3c;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+        }
+        
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .auth-links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .auth-links a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: #7f8c8d;
+            text-decoration: none;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .back-link:hover {
+            color: #3498db;
+        }
+        
+        .password-strength {
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        .strength-weak { color: #e74c3c; }
+        .strength-medium { color: #f39c12; }
+        .strength-strong { color: #27ae60; }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <a href="/about" class="back-link">← Back to Home</a>
+        
+        <div class="auth-header">
+            <h1>Join Woodpecker</h1>
+            <p>Start your chess improvement journey</p>
+        </div>
+        
+        <div id="success-message" class="success-message"></div>
+        
+        <form id="signup-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+                <div class="error-message" id="email-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+                <div class="password-strength" id="password-strength"></div>
+                <div class="error-message" id="password-error"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" name="confirm-password" required>
+                <div class="error-message" id="confirm-password-error"></div>
+            </div>
+            
+            <button type="submit" class="btn" id="submit-btn">Create Account</button>
+        </form>
+        
+        <div class="auth-links">
+            <p>Already have an account? <a href="/auth/sign-in">Sign in</a></p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('signup-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const successDiv = document.getElementById('success-message');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirm-password');
+        const strengthDiv = document.getElementById('password-strength');
+        
+        // Client-side validation
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+        
+        function checkPasswordStrength(password) {
+            let strength = 0;
+            let feedback = [];
+            
+            if (password.length >= 6) strength++;
+            else feedback.push('at least 6 characters');
+            
+            if (/[a-z]/.test(password)) strength++;
+            else feedback.push('lowercase letter');
+            
+            if (/[A-Z]/.test(password)) strength++;
+            else feedback.push('uppercase letter');
+            
+            if (/[0-9]/.test(password)) strength++;
+            else feedback.push('number');
+            
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            else feedback.push('special character');
+            
+            return { strength, feedback };
+        }
+        
+        function updatePasswordStrength() {
+            const password = passwordInput.value;
+            const { strength, feedback } = checkPasswordStrength(password);
+            
+            if (password.length === 0) {
+                strengthDiv.textContent = '';
+                return;
+            }
+            
+            let strengthText = '';
+            let strengthClass = '';
+            
+            if (strength <= 2) {
+                strengthText = 'Weak';
+                strengthClass = 'strength-weak';
+            } else if (strength <= 3) {
+                strengthText = 'Medium';
+                strengthClass = 'strength-medium';
+            } else {
+                strengthText = 'Strong';
+                strengthClass = 'strength-strong';
+            }
+            
+            strengthDiv.textContent = `Password strength: ${strengthText}`;
+            strengthDiv.className = `password-strength ${strengthClass}`;
+        }
+        
+        function showError(fieldId, message) {
+            const field = document.getElementById(fieldId);
+            const errorDiv = document.getElementById(fieldId + '-error');
+            field.classList.add('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+        
+        function clearError(fieldId) {
+            const field = document.getElementById(fieldId);
+            const errorDiv = document.getElementById(fieldId + '-error');
+            field.classList.remove('error');
+            errorDiv.style.display = 'none';
+        }
+        
+        function validateForm() {
+            let isValid = true;
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            // Clear previous errors
+            clearError('email');
+            clearError('password');
+            clearError('confirm-password');
+            
+            // Validate email
+            if (!email) {
+                showError('email', 'Email is required');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('email', 'Please enter a valid email address');
+                isValid = false;
+            }
+            
+            // Validate password
+            if (!password) {
+                showError('password', 'Password is required');
+                isValid = false;
+            } else if (password.length < 6) {
+                showError('password', 'Password must be at least 6 characters');
+                isValid = false;
+            }
+            
+            // Validate confirm password
+            if (!confirmPassword) {
+                showError('confirm-password', 'Please confirm your password');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                showError('confirm-password', 'Passwords do not match');
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        // Update password strength in real-time
+        passwordInput.addEventListener('input', updatePasswordStrength);
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            if (!validateForm()) {
+                return;
+            }
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Creating Account...';
+            
+            try {
+                const formData = new FormData(form);
+                const data = {
+                    email: formData.get('email'),
+                    password: formData.get('password')
+                };
+                
+                const response = await fetch('/api/auth/sign-up', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(data)
+                });
+                
+                if (response.ok) {
+                    successDiv.textContent = 'Account created successfully! Redirecting...';
+                    successDiv.style.display = 'block';
+                    
+                    // Redirect to trainer after a short delay
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1000);
+                } else {
+                    const errorData = await response.text();
+                    if (response.status === 409) {
+                        showError('email', 'An account with this email already exists');
+                    } else {
+                        throw new Error(errorData || 'Sign up failed');
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Sign up error:', error);
+                showError('email', 'Failed to create account. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Create Account';
+            }
+        });
+    </script>
+</body>
+</html>
